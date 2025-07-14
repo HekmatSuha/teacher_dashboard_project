@@ -1,0 +1,152 @@
+{% extends 'students/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Dashboard</h2>
+
+<!-- Stat Cards -->
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-primary h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="card-title">{{ total_students }}</h4>
+                        <p class="card-text">Total Students</p>
+                    </div>
+                    <i class="bi bi-people-fill" style="font-size: 3rem;"></i>
+                </div>
+                <a href="{% url 'student-list' %}" class="text-white stretched-link">View all</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card text-white bg-info h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="card-title">{{ total_groups }}</h4>
+                        <p class="card-text">Total Groups</p>
+                    </div>
+                    <i class="bi bi-collection-fill" style="font-size: 3rem;"></i>
+                </div>
+                <a href="{% url 'group-list' %}" class="text-white stretched-link">Manage groups</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Attendance for {{ today|date:"F d, Y" }}</h5>
+                <div class="d-flex justify-content-around text-center mt-3">
+                    <div>
+                        <h4 class="text-success">{{ present_count }}</h4>
+                        <p>Present</p>
+                    </div>
+                    <div>
+                        <h4 class="text-danger">{{ absent_count }}</h4>
+                        <p>Absent</p>
+                    </div>
+                    <div>
+                        <h4 class="text-warning">{{ unmarked_count }}</h4>
+                        <p>Unmarked</p>
+                    </div>
+                </div>
+                <a href="{% url 'attendance' %}" class="btn btn-outline-primary mt-2 w-100">Take Today's Attendance</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Overall Attendance Distribution
+            </div>
+            <div class="card-body">
+                <canvas id="attendancePieChart" style="max-height: 300px;"></canvas>
+            </div>
+        </div>
+    </div>
+<!-- Quick Lists -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Recently Added Students
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for student in recently_added_students %}
+                <li class="list-group-item"><a href="{% url 'student-detail' student.pk %}">{{ student.full_name }}</a> ({{ student.group.name }})</li>
+                {% empty %}
+                <li class="list-group-item">No students added recently.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Students with Missing Contact Info
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for student in students_missing_info %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ student.full_name }}
+                    <a href="{% url 'student-edit' student.pk %}" class="btn btn-sm btn-outline-warning">Update</a>
+                </li>
+                {% empty %}
+                <li class="list-group-item">All students have contact info!</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('attendancePieChart');
+
+    // Convert Django context data to JavaScript arrays
+    const chartLabels = {{ chart_labels|safe }};
+    const chartData = {{ chart_data|safe }};
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                label: 'Total Records',
+                data: chartData,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.7)',  // Absent - Red
+                    'rgba(255, 205, 86, 0.7)',   // Excused - Yellow
+                    'rgba(75, 192, 192, 0.7)',   // Present - Green
+                    'rgba(54, 162, 235, 0.7)',   // Late - Blue
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(255, 205, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(54, 162, 235, 1)',
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: false,
+                    text: 'Overall Attendance Distribution'
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

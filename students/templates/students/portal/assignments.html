@@ -1,0 +1,44 @@
+{% extends 'students/base.html' %}
+
+{% block title %}My Assignments{% endblock %}
+
+{% block content %}
+<h2>My Assignments</h2>
+
+<!-- Pending Assignments -->
+<h4 class="mt-4">Pending</h4>
+<div class="list-group">
+    {% for assignment in pending_assignments %}
+    <div class="list-group-item">
+             <a href="{% url 'assignment-submit' assignment.pk %}" class="list-group-item list-group-item-action">
+
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ assignment.title }}</h5>
+            <small>Due: {{ assignment.due_date|date:"F d, Y" }}</small>
+        </div>
+        <p class="mb-1">{{ assignment.description|default:"No description provided." }}</p>
+        {% if assignment.file %}<a href="{{ assignment.file.url }}" download>Download Attached File</a>{% endif %}
+    </div>
+    {% empty %}
+    <div class="list-group-item">You have no pending assignments. Great job!</div>
+    {% endfor %}
+</div>
+
+<!-- Completed Assignments -->
+<h4 class="mt-5">Completed & Graded</h4>
+<div class="list-group">
+    {% for grade in grades %}
+    <div class="list-group-item list-group-item-light">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ grade.assignment.title }}</h5>
+            <span class="badge bg-success rounded-pill fs-6">Score: {{ grade.score }}</span>
+        </div>
+        {% if grade.comment %}
+        <p class="mb-1 fst-italic">Teacher's Comment: "{{ grade.comment }}"</p>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div class="list-group-item">You have no graded assignments yet.</div>
+    {% endfor %}
+</div>
+{% endblock %}

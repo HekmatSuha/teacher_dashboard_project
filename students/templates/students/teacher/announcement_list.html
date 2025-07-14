@@ -1,0 +1,38 @@
+{% extends 'students/base.html' %}
+
+{% block title %}Manage Announcements{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Manage Announcements</h2>
+    <a href="{% url 'announcement-add' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Announcement</a>
+</div>
+
+<div class="card">
+    <div class="list-group list-group-flush">
+        {% for announcement in announcements %}
+        <div class="list-group-item">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{ announcement.title }}</h5>
+                <small class="text-muted">{{ announcement.created_at|date:"F d, Y" }}</small>
+            </div>
+            <p class="mb-1">{{ announcement.content|truncatewords:20 }}</p>
+            <small class="text-muted">
+                Audience: 
+                {% if announcement.group %}
+                    <strong>{{ announcement.group.name }}</strong>
+                {% else %}
+                    <strong>All Students</strong>
+                {% endif %}
+            </small>
+            <div class="mt-2">
+                <a href="{% url 'announcement-edit' announcement.pk %}" class="btn btn-sm btn-outline-warning">Edit</a>
+                <a href="{% url 'announcement-delete' announcement.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="list-group-item text-center p-4">You have not posted any announcements.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

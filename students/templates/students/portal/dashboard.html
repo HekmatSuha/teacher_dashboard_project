@@ -1,0 +1,95 @@
+{% extends 'students/base.html' %}
+
+{% block title %}My Dashboard{% endblock %}
+
+{% block content %}
+<h2>Welcome, {{ student.full_name }}!</h2>
+<p class="text-muted">Here is a summary of your current status.</p>
+
+{% if announcements %}
+<div class="alert alert-info">
+    <h4 class="alert-heading">Recent Announcements</h4>
+    <hr>
+    {% for announcement in announcements %}
+        <div class="mb-3">
+            <strong>{{ announcement.title }}</strong> <small class="text-muted">({{ announcement.created_at|timesince }} ago)</small>
+            <p>{{ announcement.content|linebreaksbr }}</p>
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Stat Cards -->
+<div class="row">
+    <div class="col-md-4 mb-3"><div class="card h-100"><div class="card-body text-center"><h4 class="card-title">{{ pending_assignments.count }}</h4><p class="card-text">Pending Assignments</p></div></div></div>
+    <div class="col-md-4 mb-3"><div class="card h-100"><div class="card-body text-center"><h4 class="card-title text-danger">{{ overdue_assignments.count }}</h4><p class="card-text">Overdue Assignments</p></div></div></div>
+    <div class="col-md-4 mb-3"><div class="card h-100"><div class="card-body text-center"><h4 class="card-title text-success">{{ completed_assignments.count }}</h4><p class="card-text">Completed Assignments</p></div></div></div>
+</div>
+
+<!-- Grade Progress Chart -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">My Grade Progress</div>
+            <div class="card-body">
+                
+                {# --- THIS IS THE CORRECTED LOGIC --- #}
+                {% if graded_assignments_for_chart %}
+                    <div style="position: relative; height: 300px;">
+                        <canvas id="gradeLineChart"></canvas>
+                    </div>
+                {% else %}
+                    <p class="text-center text-muted">You have no graded assignments yet. Your grade chart will appear here once you do!</p>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'student-assignments' %}" class="btn btn-primary">View All My Assignments</a>
+    <a href="{% url 'student-profile' %}" class="btn btn-secondary">Edit My Profile</a>
+</div>
+
+{# --- SCRIPT AT THE BOTTOM OF THE FILE --- #}
+{% if graded_assignments_for_chart %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('gradeLineChart');
+    if (!ctx) return;
+
+    // Build the JavaScript arrays from the Django queryset
+    const gradeLabels = [
+        {% for grade in graded_assignments_for_chart %}
+            "{{ grade.assignment.title|escapejs }}",
+        {% endfor %}
+    ];
+
+    const gradeData = [
+        {% for grade in graded_assignments_for_chart %}
+            {{ grade.score }},
+        {% endfor %}
+    ];
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: gradeLabels,
+            datasets: [{
+                label: 'My Score',
+                data: gradeData,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: { y: { beginAtZero: true, suggestedMax: 100 } }
+        }
+    });
+});
+</script>
+{% endif %}
+
+{% endblock %}

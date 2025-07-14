@@ -1,0 +1,87 @@
+{% extends 'students/base.html' %}
+{% load student_extras %}
+{% block title %}Grade Entry{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'assignment-list' %}">Assignments</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Grade Entry</li>
+    </ol>
+</nav>
+
+<h2>Enter Grades for: <span class="text-primary">{{ assignment.title }}</span></h2>
+<p class="text-muted">Group: {{ assignment.group.name }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+                
+                {# --- TABLE HEADER --- #}
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">Student</th>
+                        <th style="width: 20%;">Score</th>
+                        <th>Comment</th>
+                    </tr>
+                </thead>
+                
+                {# --- TABLE BODY --- #}
+                <tbody>
+                    {% for student in students %}
+                    {% with grade=grades|get_item:student.id %}
+                    
+                    {# --- Main Row for each Student --- #}
+                    <tr>
+                        <td>
+                            {{ student.full_name }}
+                            
+                            {# Display Submission Links/Text #}
+                            {% if grade %}
+                                <div class="mt-2">
+                                {% if grade.submission_file %}
+                                    <a href="{{ grade.submission_file.url }}" class="btn btn-sm btn-outline-primary" download>
+                                        <i class="bi bi-paperclip"></i> View File
+                                    </a>
+                                {% endif %}
+                                {% if grade.submission_text %}
+                                    <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#submissionText{{ student.id }}">
+                                        <i class="bi bi-body-text"></i> Show Text
+                                    </button>
+                                {% endif %}
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <input type="number" step="0.01" name="score_{{ student.id }}" class="form-control" value="{{ grade.score|default:'' }}">
+                        </td>
+                        <td>
+                            <input type="text" name="comment_{{ student.id }}" class="form-control" value="{{ grade.comment|default:'' }}">
+                        </td>
+                    </tr>
+                    
+                    {# --- Collapsible Row for Text Submission --- #}
+                    {% if grade and grade.submission_text %}
+                    <tr class="collapse" id="submissionText{{ student.id }}">
+                        <td colspan="3">
+                            <div class="card card-body bg-light">
+                                <h6 class="card-title">Text Submission from {{ student.full_name }}:</h6>
+                                <div class="p-2 border rounded" style="white-space: pre-wrap;">{{ grade.submission_text }}</div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endif %}
+
+                    {% endwith %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer text-end">
+            <button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> Save Grades</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

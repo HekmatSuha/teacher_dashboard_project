@@ -1,0 +1,17 @@
+{% extends 'students/base.html' %}
+{% block title %}{% if object %}Edit Announcement{% else %}New Announcement{% endif %}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title">{% if object %}Edit Announcement{% else %}Create New Announcement{% endif %}</h2>
+        <hr>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success">Save Announcement</button>
+            <a href="{% url 'announcement-list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

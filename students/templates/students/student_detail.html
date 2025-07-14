@@ -1,0 +1,48 @@
+<!-- students/templates/students/student_detail.html (New File) -->
+{% extends 'students/base.html' %}
+
+{% block title %}{{ student.full_name }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'student-list' %}">Students</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ student.full_name }}</li>
+    </ol>
+</nav>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">{{ student.full_name }}</h2>
+        <div>
+            <a href="{% url 'student-edit' student.pk %}" class="btn btn-warning"><i class="bi bi-pencil-fill"></i> Edit</a>
+            <a href="{% url 'student-delete' student.pk %}" class="btn btn-danger"><i class="bi bi-trash-fill"></i> Delete</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="alert {% if student.user %}alert-success{% else %}alert-warning{% endif %}" role="alert">
+            <h5 class="alert-heading">Account Status</h5>
+            {% if student.user %}
+                <p>This student has a login account. (Username: <strong>{{ student.user.username }}</strong>)</p>
+            {% else %}
+                <p>This student does not have a login account yet.</p>
+                <a href="{% url 'student-create-account' student.pk %}" class="btn btn-sm btn-success">Create Account Now</a>
+            {% endif %}
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Group:</strong> {{ student.group.name }}</p>
+                <p><strong>Email:</strong> {{ student.email|default:"Not provided" }}</p>
+                <p><strong>Phone:</strong> {{ student.phone|default:"Not provided" }}</p>
+                <p><strong>Telegram:</strong> {{ student.telegram|default:"Not provided" }}</p>
+            </div>
+            <div class="col-md-6">
+                <h5>Notes:</h5>
+                <div class="p-3 bg-light rounded border">
+                    <p class="mb-0" style="white-space: pre-wrap;">{{ student.note|default:"No notes for this student." }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'students/base.html' %}
+
+{% block title %}Submit Assignment{% endblock %}
+
+{% block content %}
+<h2>Submit: <span class="text-primary">{{ assignment.title }}</span></h2>
+<p class="text-muted">Due: {{ assignment.due_date|date:"F d, Y" }}</p>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Assignment Details</h5>
+        <p>{{ assignment.description|linebreaksbr }}</p>
+        {% if assignment.file %}
+            <a href="{{ assignment.file.url }}" class="btn btn-info" download><i class="bi bi-download"></i> Download Instructions File</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">My Submission</h5>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">You can either upload a file or type your response in the text box below. Both will be saved.</p>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- File Upload Field -->
+            <div class="mb-4">
+                <label for="{{ form.submission_file.id_for_label }}" class="form-label">
+                    <i class="bi bi-paperclip"></i> <strong>Upload a File</strong> (Optional)
+                </label>
+                {{ form.submission_file }}
+                {% if object.submission_file %}
+                    <div class="mt-2 alert alert-info small">
+                        Current submission: <a href="{{ object.submission_file.url }}">{{ object.submission_file.name }}</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <hr>
+
+            <!-- Text Response Field -->
+            <div class="mb-3">
+                <label for="{{ form.submission_text.id_for_label }}" class="form-label">
+                    <i class="bi bi-textarea-t"></i> <strong>Type Your Response</strong> (Optional)
+                </label>
+                {{ form.submission_text }}
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-success"><i class="bi bi-check-lg"></i> Submit Assignment</button>
+                <a href="{% url 'student-assignments' %}" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

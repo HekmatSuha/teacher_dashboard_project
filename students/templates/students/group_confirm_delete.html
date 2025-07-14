@@ -1,0 +1,16 @@
+{% extends 'students/base.html' %}
+{% block title %}Confirm Deletion{% endblock %}
+
+{% block content %}
+<div class="card text-center">
+    <div class="card-body">
+        <h3 class="card-title">Confirm Deletion</h3>
+        <p class="card-text">Are you sure you want to delete the group "{{ object.name }}"? This will also delete all students in this group.</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a href="{% url 'group-list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
