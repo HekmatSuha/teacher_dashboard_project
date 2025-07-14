@@ -18,7 +18,7 @@ Student{% else %}Add Student{% endif %}{% endblock %} {% block content %}
       {% if object %}Edit Student{% else %}Add Student{% endif %}
     </h2>
     <hr />
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
 
       <!-- Let Django render the form fields -->
