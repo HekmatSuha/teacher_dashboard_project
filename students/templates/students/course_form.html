@@ -1,0 +1,29 @@
+{% extends 'students/base.html' %}
+{% block title %}{% if object %}Edit Course{% else %}Add Course{% endif %}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h2 class="card-title">{% if object %}Edit Course{% else %}Add Course{% endif %}</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }}</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="text-danger small">{{ form.title.errors|striptags }}</div>
+                {% endif %}
+            </div>
+            <div class="mb-3">
+                <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="text-danger small">{{ form.description.errors|striptags }}</div>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn btn-success">Save</button>
+            <a href="{% url 'course-list' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
