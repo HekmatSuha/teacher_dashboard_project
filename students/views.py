@@ -28,8 +28,17 @@ from django.views.generic import (
 )
 
 # Local Application Imports
-from .forms import StudentForm, GroupForm ,SubmissionForm
-from .models import Student, Group, Attendance, Assignment, Grade ,Announcement
+from .forms import StudentForm, GroupForm, SubmissionForm, CourseForm
+from .models import (
+    Student,
+    Group,
+    Attendance,
+    Assignment,
+    Grade,
+    Announcement,
+    Course,
+    Enrollment,
+)
 
 
 
@@ -193,6 +202,44 @@ class GroupDeleteView(AuthRequiredMixin, SuccessMessageMixin, DeleteView):
     success_url = reverse_lazy('group-list')
     success_message = "Group was deleted successfully."
     
+    def get_success_message(self, cleaned_data):
+        return self.success_message
+
+
+# --- Course Management ---
+class CourseListView(AuthRequiredMixin, ListView):
+    model = Course
+    template_name = 'students/course_list.html'
+    context_object_name = 'courses'
+    queryset = Course.objects.all().order_by('title')
+
+
+class CourseCreateView(AuthRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Course
+    form_class = CourseForm
+    template_name = 'students/course_form.html'
+    success_url = reverse_lazy('course-list')
+    success_message = "Course '%(title)s' was created successfully."
+
+    def form_valid(self, form):
+        form.instance.teacher = self.request.user
+        return super().form_valid(form)
+
+
+class CourseUpdateView(AuthRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = Course
+    form_class = CourseForm
+    template_name = 'students/course_form.html'
+    success_url = reverse_lazy('course-list')
+    success_message = "Course '%(title)s' was updated successfully."
+
+
+class CourseDeleteView(AuthRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = Course
+    template_name = 'students/course_confirm_delete.html'
+    success_url = reverse_lazy('course-list')
+    success_message = "Course was deleted successfully."
+
     def get_success_message(self, cleaned_data):
         return self.success_message
 

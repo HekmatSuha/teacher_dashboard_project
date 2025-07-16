@@ -1,7 +1,7 @@
 # students/forms.py
 
 from django import forms
-from .models import Student, Group ,Grade
+from .models import Student, Group, Grade, Course
 
 
 class StudentForm(forms.ModelForm):
@@ -35,4 +35,14 @@ class SubmissionForm(forms.ModelForm):
             'submission_file': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             # +++ ADD A WIDGET FOR THE TEXT AREA +++
             'submission_text': forms.Textarea(attrs={'class': 'form-control', 'rows': 8, 'placeholder': 'Type your response here...'}),
+        }
+
+
+class CourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = ['title', 'description']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }

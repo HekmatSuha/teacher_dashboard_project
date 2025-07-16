@@ -47,6 +47,12 @@ urlpatterns = [
     path('group/add/', views.GroupCreateView.as_view(), name='group-add'),
     path('group/<int:pk>/edit/', views.GroupUpdateView.as_view(), name='group-edit'),
     path('group/<int:pk>/delete/', views.GroupDeleteView.as_view(), name='group-delete'),
+
+    # --- Course Management ---
+    path('courses/', views.CourseListView.as_view(), name='course-list'),
+    path('course/add/', views.CourseCreateView.as_view(), name='course-add'),
+    path('course/<int:pk>/edit/', views.CourseUpdateView.as_view(), name='course-edit'),
+    path('course/<int:pk>/delete/', views.CourseDeleteView.as_view(), name='course-delete'),
     
     # --- Attendance ---
     path('attendance/', views.attendance_view, name='attendance'),
